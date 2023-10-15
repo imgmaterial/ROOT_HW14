@@ -20,29 +20,36 @@ using namespace std;
 #include <TMath.h>   // math functions
 #include <TCanvas.h> // canvas object
 
-void rootfuncgenerate(Int_t nEvents, Double_t v2); // ROOT method (a bit dangerous since we don't know exactly what happens!)
+void rootfuncgenerate(Int_t nEvents, Int_t nTracks, Double_t v2); // ROOT method (a bit dangerous since we don't know exactly what happens!)
 
 
 //________________________________________________________________________
-void rootfuncgenerate(Int_t nEvents, Double_t v2) 
+void rootfuncgenerate(Int_t nEvents, Int_t nTracks ,Double_t v2) 
 {
   cout << "Generating " << nEvents << " events" << endl << endl;
+
+  
 
   // create histogram that we will fill with random values
   TH1D* hPhi = new TH1D("hPhi", "ROOT func generated v2 distribution; x; Counts", 
 			100, 0, 2*TMath::Pi());
 
   // Define the function we want to generate
-  TF1* phiFunc = new TF1("phiFunc", "1 + 2*[0]*cos(2*x)", 0, 2*TMath::Pi());
-  phiFunc->SetParameter(0, v2);
+  TF1* v2Func = new TF1("v2Func", "1 + 2*[0]*cos(2*x)", 0, 2*TMath::Pi());
+  v2Func->SetParameter(0, v2);
+  Double_t phi[nTracks];
   // make a loop for the number of events
   for(Int_t n = 0; n < nEvents; n++) {
-    
     if((n+1)%1000==0)
       cout << "event " << n+1 << endl;
-    
     // fill our sin dist histogram
-    hPhi->Fill(phiFunc->GetRandom()); 
+    for (Int_t nt = 0;nt<nTracks;nt++){
+      phi[nt] = v2Func->GetRandom();
+    }
+    for (Int_t i = 0;i<nTracks;i++){
+      hPhi->Fill(phi[i]);
+    }
+    
   }
   
   // Set ROOT drawing styles
