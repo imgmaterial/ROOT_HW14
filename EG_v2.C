@@ -10,6 +10,7 @@
 
 // include C++ STL headers 
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -28,7 +29,7 @@ void rootfuncgenerate(Int_t nEvents, Int_t nTracks ,Double_t v2)
 {
   cout << "Generating " << nEvents << " events" << endl << endl;
 
-  
+  ofstream file("phi_dist.dat");
 
   // create histogram that we will fill with random values
   TH1D* hPhi = new TH1D("hPhi", "ROOT func generated v2 distribution; x; Counts", 
@@ -40,11 +41,12 @@ void rootfuncgenerate(Int_t nEvents, Int_t nTracks ,Double_t v2)
   Double_t phi[nTracks];
   // make a loop for the number of events
   for(Int_t n = 0; n < nEvents; n++) {
-    if((n+1)%1000==0)
-      cout << "event " << n+1 << endl;
+    file << "Event " << n << endl;
+    file << "nTracks " << nTracks << endl;
     // fill our sin dist histogram
     for (Int_t nt = 0;nt<nTracks;nt++){
       phi[nt] = v2Func->GetRandom();
+      file << nt << ":" << phi[nt]<< endl;
     }
     for (Int_t i = 0;i<nTracks;i++){
       hPhi->Fill(phi[i]);
@@ -71,4 +73,5 @@ void rootfuncgenerate(Int_t nEvents, Int_t nTracks ,Double_t v2)
   
   // Save the canvas as a picture
   c1->SaveAs("v2_rootfunc.jpg");
+  file.close();
 }
